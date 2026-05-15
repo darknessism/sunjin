@@ -48,6 +48,19 @@
             animation: spin360 8s linear infinite;
             display: inline-block;
         }
+        #proj-window {
+            width: min(525px, 43.5vw);
+        }
+        @media (hover: none), (pointer: coarse) {
+            .cursor-dot, .cursor-outline {
+                display: none !important;
+            }
+        }
+        @media (max-width: 768px) {
+            #proj-window {
+                width: 82vw;
+            }
+        }
         .cursor-dot, .cursor-outline {
             position: fixed;
             top: 0;
@@ -505,7 +518,7 @@
             <!-- Center: Masked image window -->
             <div id="proj-window"
                  class="absolute z-10 overflow-hidden rounded-[20px] md:rounded-[28px] shadow-[0_40px_80px_rgba(0,0,0,0.8)] border border-white/10"
-                 style="width: min(525px, 43.5vw); aspect-ratio: 16/9; top: 46%; left: 50%; transform: translate(-50%, -50%);">
+                 style="aspect-ratio: 16/9; top: 46%; left: 50%; transform: translate(-50%, -50%);">
                 <!-- Image strip: 5 images each occupying one window-height slot -->
                 <div id="proj-img-strip" class="absolute top-0 left-0 w-full will-change-transform" style="height: 500%;">
                     <div class="absolute left-0 w-full" style="height:20%; top:0%;">
