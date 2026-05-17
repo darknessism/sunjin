@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Careers | SUNJIN VIETNAM</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit','sans-serif'], display: ['Jost','sans-serif'] },
+                    colors: { dark: '#0a0a0a', light: '#f5f5f5', accent: '#888888' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0a0a0a; color: #f5f5f5; cursor: none; overflow-x: hidden; font-family: 'Outfit', sans-serif; }
+
+        @media (hover: none), (pointer: coarse) { .cursor-dot, .cursor-outline { display: none !important; } }
+        .cursor-dot, .cursor-outline { position: fixed; top: 0; left: 0; transform: translate(-50%,-50%); border-radius: 50%; z-index: 9999; pointer-events: none; }
+        .cursor-dot { width: 8px; height: 8px; background-color: white; mix-blend-mode: difference; transition: width 0.2s, height 0.2s; }
+        .cursor-outline { width: 40px; height: 40px; border: 1px solid white; mix-blend-mode: difference; transition: width 0.2s, height 0.2s; }
+        .cursor-hover .cursor-dot { width: 0; height: 0; }
+        .cursor-hover .cursor-outline { width: 60px; height: 60px; background-color: rgba(255,255,255,0.1); backdrop-filter: blur(2px); }
+
+        .detail-left { position: fixed; top: 0; left: 0; width: 50%; height: 100vh; overflow: hidden; z-index: 10; }
+        .detail-left img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease; }
+        .detail-left-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(5,5,5,0.88) 0%, rgba(5,5,5,0.35) 50%, rgba(5,5,5,0.15) 100%); }
+        .detail-left-content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 2.5rem; }
+
+        .close-btn { display: inline-flex; align-items: center; gap: 8px; font-family: 'Outfit', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.25em; color: white; text-decoration: none; border: 1px solid rgba(255,255,255,0.3); padding: 8px 18px; border-radius: 4px; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); transition: background 0.25s ease, border-color 0.25s ease; cursor: pointer; width: fit-content; }
+        .close-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.6); }
+
+        .detail-right { margin-left: 50%; min-height: 100vh; background: #0a0a0a; padding: 4rem 3rem 6rem; border-left: 1px solid rgba(255,255,255,0.08); }
+
+        .accordion-header { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 1.4rem 0; border-top: 1px solid rgba(255,255,255,0.1); background: none; cursor: pointer; color: white; text-align: left; }
+        .accordion-wrapper:last-of-type .accordion-header { border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .accordion-title { font-family: 'Outfit', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.28em; color: white; }
+        .accordion-chevron { flex-shrink: 0; transition: transform 0.35s ease; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1); }
+        .accordion-content.open { max-height: 2000px; }
+        .accordion-inner { padding: 0.5rem 0 2rem; }
+
+        .content-section-title { font-family: 'Outfit', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.28em; color: rgba(255,255,255,0.45); margin-bottom: 1rem; margin-top: 1.6rem; }
+        .content-section-title:first-child { margin-top: 0; }
+        .content-list { list-style: none; padding: 0; }
+        .content-list li { font-family: 'Outfit', sans-serif; font-size: 13px; color: rgba(245,245,245,0.65); line-height: 1.8; padding: 0.3rem 0 0.3rem 1.2rem; position: relative; }
+        .content-list li::before { content: '·'; position: absolute; left: 0; color: rgba(255,255,255,0.3); }
+
+        .apply-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.15); padding: 0.75rem 0; font-family: 'Outfit', sans-serif; font-size: 13px; color: white; outline: none; transition: border-color 0.25s ease; }
+        .apply-input::placeholder { color: rgba(255,255,255,0.3); }
+        .apply-input:focus { border-bottom-color: rgba(255,255,255,0.55); }
+        .upload-btn { display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 10px 18px; font-family: 'Outfit', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.25s ease; background: none; width: 100%; }
+        .upload-btn:hover { border-color: rgba(255,255,255,0.45); color: rgba(255,255,255,0.85); }
+        .submit-btn { width: 100%; background: white; color: #0a0a0a; border: none; padding: 14px 24px; font-family: 'Outfit', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.25em; cursor: pointer; border-radius: 4px; transition: background 0.25s ease, opacity 0.25s ease; margin-top: 1.5rem; }
+        .submit-btn:hover { background: rgba(245,245,245,0.88); }
+
+        @media (max-width: 768px) {
+            .detail-left { position: relative; width: 100%; height: 60vh; }
+            .detail-right { margin-left: 0; padding: 2.5rem 1.5rem 5rem; border-left: none; border-top: 1px solid rgba(255,255,255,0.08); }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+    </style>
+</head>
+<body class="antialiased selection:bg-white selection:text-dark">
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <!-- LEFT PANEL -->
+    <div class="detail-left">
+        <img id="left-img" src="" alt="">
+        <div class="detail-left-overlay"></div>
+        <div class="detail-left-content">
+            <a href="careers.html" class="close-btn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                Close
+            </a>
+            <div>
+                <p class="font-sans text-[10px] uppercase tracking-[0.3em] text-white/45 mb-4">Open Position</p>
+                <h1 id="job-title-h1" class="font-display font-light text-white leading-[1.1]" style="font-size: clamp(2rem, 4.5vw, 3.5rem);"></h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="detail-right">
+
+        <!-- Meta -->
+        <div class="grid grid-cols-2 gap-0 mb-8">
+            <div class="py-5 border-b border-white/10">
+                <p class="font-sans text-[10px] uppercase tracking-[0.25em] text-white/30 mb-2">Level</p>
+                <p id="meta-level" class="font-display font-light text-white text-lg"></p>
+            </div>
+            <div class="py-5 border-b border-white/10 pl-6">
+                <p class="font-sans text-[10px] uppercase tracking-[0.25em] text-white/30 mb-2">Salary</p>
+                <p class="font-display font-light text-white text-lg">Negotiating</p>
+            </div>
+            <div class="py-5 border-b border-white/10 pr-6">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-white/30"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    <p class="font-sans text-[10px] uppercase tracking-[0.25em] text-white/30">Deadline</p>
+                </div>
+                <p class="font-sans text-sm text-white/70">Closes in <strong id="meta-deadline" class="text-white font-medium"></strong></p>
+            </div>
+            <div class="py-5 border-b border-white/10 pl-6">
+                <p class="font-sans text-[10px] uppercase tracking-[0.25em] text-white/30 mb-2">Division</p>
+                <p id="meta-division" class="font-sans text-sm text-white/70"></p>
+                <p id="meta-location" class="font-sans text-sm text-white/45 mt-0.5"></p>
+            </div>
+        </div>
+
+        <!-- Accordion: Job Description -->
+        <div class="accordion-wrapper">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span class="accordion-title">Job Description</span>
+                <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 15l-6-6-6 6"/></svg>
+            </button>
+            <div class="accordion-content open">
+                <div class="accordion-inner" id="desc-content"></div>
+            </div>
+        </div>
+
+        <!-- Accordion: Requirements -->
+        <div class="accordion-wrapper">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span class="accordion-title">Requirements</span>
+                <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="accordion-content">
+                <div class="accordion-inner" id="req-content"></div>
+            </div>
+        </div>
+
+        <!-- Accordion: Benefits -->
+        <div class="accordion-wrapper">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span class="accordion-title">Benefits</span>
+                <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="accordion-content">
+                <div class="accordion-inner" id="benefits-content"></div>
+            </div>
+        </div>
+
+        <!-- Application Form -->
+        <div class="mt-12 pt-10 border-t border-white/8">
+            <p class="font-sans text-[10px] uppercase tracking-[0.3em] text-white/30 mb-1">Apply for this position</p>
+            <h2 class="font-display font-light text-white mb-8" style="font-size: clamp(1.5rem, 3vw, 2.2rem);">Send your application.</h2>
+            <form class="flex flex-col gap-5" onsubmit="handleSubmit(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="text" placeholder="Full Name (Required)" class="apply-input" required>
+                    <input type="email" placeholder="Email Address (Required)" class="apply-input" required>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="tel" placeholder="Phone Number (Required)" class="apply-input" required>
+                    <input type="text" placeholder="Years of Experience" class="apply-input">
+                </div>
+                <textarea placeholder="Tell us about yourself and why you're a good fit for this role..." rows="4" class="apply-input resize-none" style="padding-top: 0.75rem;"></textarea>
+                <label class="upload-btn" for="cv-upload">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    <span id="upload-label">Upload CV / Portfolio (PDF, max 15MB)</span>
+                </label>
+                <input type="file" id="cv-upload" accept=".pdf,.jpg,.png" class="hidden" onchange="updateUploadLabel(this)">
+                <button type="submit" class="submit-btn">Submit Application</button>
+            </form>
+            <p class="font-sans text-[10px] text-white/20 mt-5 leading-relaxed">
+                By submitting this form you agree to SUNJIN VIETNAM processing your personal data for recruitment purposes.
+            </p>
+        </div>
+
+        <!-- Back link -->
+        <div class="mt-16 pt-8 border-t border-white/8">
+            <a href="careers.html" class="inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.25em] text-white/35 hover:text-white transition-colors">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                All Open Positions
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+    const JOBS = {
+
+      'finishing-supervision': {
+        title: 'Finishing Supervision (Interior)',
+        titleBreaks: 'Finishing<br>Supervision<br>(Interior)',
+        level: 'Intermediate',
+        deadline: '50 Days',
+        division: 'Construction Division',
+        location: 'Phu Quoc, Vietnam',
+        image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1400&q=80',
+        description: [
+          { title: 'Design Management & Coordination', items: [
+            'Participate in site surveys and collection of design information',
+            'Participate in preparing bidding documents; define and orient design solutions',
+            'Coordinate across disciplines and related design tasks',
+            'Lead overall design coordination; manage design schedule and deliverables',
+            'Lead quality review and evaluation of design documents',
+            'Participate in checking coordination among drawings'
+          ]},
+          { title: 'Site Supervision', items: [
+            'Supervise interior finishing works on site according to approved drawings',
+            'Coordinate with contractors, suppliers, and specialist consultants',
+            'Monitor construction quality and report on progress to project lead',
+            'Identify and resolve technical issues arising during construction',
+            'Prepare and review construction documentation and handover reports',
+            'Ensure all finishing works meet SUNJIN quality standards and client expectations'
+          ]}
+        ],
+        requirements: [
+          { title: 'Qualifications', items: [
+            "Bachelor's degree in Architecture, Interior Design, or Civil Engineering",
+            'Minimum 3–5 years of experience in construction supervision (interior works preferred)',
+            'Strong knowledge of interior materials, finishing techniques, and Vietnamese building standards',
+            'Proficiency in AutoCAD, SketchUp, Revit, or equivalent documentation tools'
+          ]},
+          { title: 'Competencies', items: [
+            'Strong attention to detail with a commitment to quality outcomes',
+            'Good communication and coordination skills across multi-disciplinary teams',
+            'Ability to read and interpret complex technical drawings',
+            'Willingness to be based at project site in Phu Quoc, Vietnam',
+            'Proficiency in Vietnamese; working English is an advantage'
+          ]}
+        ],
+        benefits: ['Competitive salary based on experience and demonstrated capabilities', 'Full social insurance and health insurance as per Vietnamese labour law', '13th month salary and performance-based annual bonus', 'Annual health check-up programme', 'Professional development, training, and workshop opportunities', 'Dynamic, collaborative, and internationally connected studio culture', 'Site allowance provided for Phu Quoc-based posting']
+      },
+
+      'senior-architect': {
+        title: 'Senior Architect',
+        titleBreaks: 'Senior<br>Architect',
+        level: 'Expert',
+        deadline: '35 Days',
+        division: 'Design Division',
+        location: 'Hanoi, Vietnam',
+        image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1400&q=80',
+        description: [
+          { title: 'Design Leadership', items: [
+            'Lead architectural design from concept through to construction documentation',
+            'Develop and communicate design ideas with clarity across all project phases',
+            'Guide junior architects and designers on live projects, setting quality benchmarks',
+            'Prepare and present design proposals to clients and review boards',
+            'Participate in design competitions and speculative research projects'
+          ]},
+          { title: 'Project Delivery', items: [
+            'Manage the design process across concurrent projects to meet schedule and budget targets',
+            'Coordinate with structural, MEP, and specialist consultants',
+            'Produce and review full sets of construction documentation',
+            'Liaise with contractors during construction to resolve design queries',
+            'Oversee mock-up reviews and material approval processes on site'
+          ]}
+        ],
+        requirements: [
+          { title: 'Qualifications', items: [
+            "Bachelor's or Master's degree in Architecture from an accredited university",
+            'Licensed architect or actively pursuing licensure preferred',
+            'Minimum 6–8 years of professional experience in an architecture practice',
+            'Strong portfolio demonstrating design excellence across at least two typologies',
+            'Proficiency in Rhino, Revit, AutoCAD, Adobe Suite; BIM experience an advantage'
+          ]},
+          { title: 'Competencies', items: [
+            'Demonstrated ability to lead a project team independently from brief to delivery',
+            'Strong design sensibility with clear critical thinking about architecture',
+            'Excellent communication in Vietnamese; working English required',
+            'Experience with Vietnamese regulatory requirements and permitting process',
+            'Collaborative, rigorous, and invested in mentoring the next generation of architects'
+          ]}
+        ],
+        benefits: ['Competitive senior-level salary commensurate with experience', 'Full social and health insurance per Vietnamese labour law', '13th month salary plus performance bonus', 'Annual health check-up and wellness allowance', 'Funded conference and study trip participation', 'Leadership pathway and performance review every 12 months', 'Flexible working arrangements available for senior staff']
+      },
+
+      'urban-planning-designer': {
+        title: 'Urban Planning Designer',
+        titleBreaks: 'Urban Planning<br>Designer',
+        level: 'Intermediate',
+        deadline: '28 Days',
+        division: 'Urban Plan Division',
+        location: 'Hanoi, Vietnam',
+        image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=1400&q=80',
+        description: [
+          { title: 'Urban Design & Masterplanning', items: [
+            'Develop master plan concepts for mixed-use, residential, and public realm projects',
+            'Prepare urban design frameworks, zoning proposals, and regulatory submissions',
+            'Conduct site analysis including land use, transport, environment, and context studies',
+            'Produce detailed planning drawings, reports, and presentations for client approval',
+            'Coordinate with urban authorities on permitting, zoning amendments, and approvals'
+          ]},
+          { title: 'Research & Visualisation', items: [
+            'Carry out comparative precedent research for urban projects',
+            'Prepare 2D and 3D visualisations of masterplan proposals for stakeholder engagement',
+            'Develop design guidelines and urban design codes for planned communities',
+            'Support public consultation processes with graphics and explanatory materials',
+            'Contribute to internal knowledge-sharing on urban planning best practice'
+          ]}
+        ],
+        requirements: [
+          { title: 'Qualifications', items: [
+            "Bachelor's or Master's degree in Urban Planning, Landscape Architecture, or Architecture",
+            'Minimum 3–5 years of experience in an urban design or planning practice',
+            'Knowledge of Vietnamese planning regulations and the national zoning framework',
+            'Proficiency in AutoCAD, GIS, SketchUp, and Adobe Suite; Rhino/Grasshopper a plus'
+          ]},
+          { title: 'Competencies', items: [
+            'Strong analytical skills with the ability to synthesise complex site and regulatory information',
+            'Clear and compelling communication of spatial ideas in both drawing and written form',
+            'Experience working with government planning authorities in Vietnam',
+            'Good English reading and writing skills for international reference research',
+            'Proactive, self-directed working style with high attention to graphic quality'
+          ]}
+        ],
+        benefits: ['Competitive salary based on experience', 'Full social and health insurance per Vietnamese labour law', '13th month salary and annual performance bonus', 'Annual health check-up', 'Access to an international network of planning and design projects', 'Professional development and training budget', 'Exposure to large-scale masterplanning and resort development projects']
+      },
+
+      'interior-design-lead': {
+        title: 'Interior Design Lead',
+        titleBreaks: 'Interior<br>Design Lead',
+        level: 'Expert',
+        deadline: '42 Days',
+        division: 'Interior Design Division',
+        location: 'Da Nang, Vietnam',
+        image: 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?auto=format&fit=crop&w=1400&q=80',
+        description: [
+          { title: 'Design Direction', items: [
+            'Lead interior design across hospitality, residential, and cultural project types',
+            'Set the spatial and material direction for each project in response to the brief and architecture',
+            'Present design schemes to clients from concept through to detailed specification',
+            'Manage the selection and procurement of FF&E (furniture, fixtures, and equipment)',
+            'Develop and maintain SUNJIN\'s interior design standard and material library'
+          ]},
+          { title: 'Team & Project Management', items: [
+            'Lead a team of 2–4 interior designers across concurrent projects',
+            'Manage project timelines, design deliverables, and client review milestones',
+            'Coordinate closely with the architecture team on spatial integration',
+            'Oversee mock-up reviews, sample approvals, and site inspections',
+            'Mentor junior interior designers and provide regular design feedback'
+          ]}
+        ],
+        requirements: [
+          { title: 'Qualifications', items: [
+            "Bachelor's or Master's degree in Interior Design or Architecture",
+            'Minimum 7–10 years of professional interior design experience',
+            'Strong portfolio demonstrating leadership across hospitality or high-end residential projects',
+            'Proficiency in AutoCAD, SketchUp, 3ds Max or equivalent, and Adobe Suite'
+          ]},
+          { title: 'Competencies', items: [
+            'Exceptional design sensibility and understanding of materials, light, and space',
+            'Demonstrated leadership ability — capable of running a small team independently',
+            'Strong client presentation skills in Vietnamese; working English required',
+            'Deep knowledge of Vietnamese and regional material suppliers and FF&E vendors',
+            'Willingness to be based in Da Nang with project-related travel'
+          ]}
+        ],
+        benefits: ['Senior-level salary negotiated individually based on portfolio and experience', 'Full social and health insurance', '13th month salary and project performance bonus', 'Annual health check-up and wellness allowance', 'Relocation support package for candidates moving to Da Nang', 'Creative leadership role with direct client exposure and design ownership', 'International project exposure including resort and cultural typologies']
+      },
+
+      'architectural-designer': {
+        title: 'Architectural Designer',
+        titleBreaks: 'Architectural<br>Designer',
+        level: 'Entry',
+        deadline: '21 Days',
+        division: 'Design Division',
+        location: 'Ho Chi Minh City, Vietnam',
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1400&q=80',
+        description: [
+          { title: 'Design & Documentation', items: [
+            'Contribute to design development from schematic design through to construction documentation',
+            'Produce high-quality drawings, diagrams, and models under the direction of senior architects',
+            'Assist with the preparation of client presentations and design review packages',
+            'Support model-making and physical prototyping activities for design explorations',
+            'Research materials, precedents, and technical solutions for current projects'
+          ]},
+          { title: 'Studio Participation', items: [
+            'Participate in design critiques, pin-ups, and studio discussions actively',
+            'Coordinate with other disciplines to incorporate structural and MEP requirements',
+            'Maintain drawing registers and project filing according to SUNJIN standards',
+            'Assist in the preparation of regulatory and planning submissions',
+            'Contribute fresh ideas and a rigorous design curiosity to every project'
+          ]}
+        ],
+        requirements: [
+          { title: 'Qualifications', items: [
+            "Bachelor's degree in Architecture from an accredited Vietnamese or international university",
+            '0–2 years of professional experience (internship experience welcomed)',
+            'Strong academic portfolio demonstrating conceptual and technical design ability',
+            'Working knowledge of AutoCAD and SketchUp; Rhino or Revit experience a plus',
+            'Adobe Suite (Photoshop, Illustrator, InDesign) for presentation production'
+          ]},
+          { title: 'Competencies', items: [
+            'Genuine passion for architecture and the built environment',
+            'Eagerness to learn, take feedback, and develop rapidly in a professional studio environment',
+            'Strong graphic communication skills and attention to drawing quality',
+            'Good written and verbal Vietnamese; basic English for reading references',
+            'Collaborative and positive attitude in a studio culture that values rigour and craft'
+          ]}
+        ],
+        benefits: ['Competitive entry-level salary with structured annual progression', 'Full social and health insurance per Vietnamese labour law', '13th month salary', 'Annual health check-up', 'Structured mentoring from senior architects on live projects', 'Regular internal design reviews and training sessions', 'Clear progression pathway toward Intermediate and Senior roles']
+      },
+
+      'bim-coordinator': {
+        title: 'BIM & Digital Design Coordinator',
+        titleBreaks: 'BIM & Digital<br>Design<br>Coordinator',
+        level: 'Intermediate',
+        deadline: '60 Days',
+        division: 'Design Division',
+        location: 'Hanoi, Vietnam',
+        image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1400&q=80',
+        description: [
+          { title: 'BIM Management & Implementation', items: [
+            'Establish and maintain BIM Execution Plans (BEP) for all active design projects',
+            'Manage federated BIM models across architecture, structure, and MEP disciplines',
+            'Conduct regular coordination and clash detection reviews using Navisworks or equivalent',
+            'Develop and maintain SUNJIN\'s Revit template library, family library, and standards documentation',
+            'Train and support architectural team members in BIM workflows and software updates'
+          ]},
+          { title: 'Digital Design & Workflow', items: [
+            'Champion the adoption of computational design tools (Dynamo, Grasshopper) for repetitive and complex geometry tasks',
+            'Develop parametric families and intelligent models that improve design efficiency',
+            'Coordinate with external consultants to ensure model interoperability and data exchange protocols',
+            'Support the creation of rendered visualisations from BIM models for client presentations',
+            'Research and evaluate emerging digital tools for potential studio adoption'
+          ]}
+        ],
+        requirements: [
+          { title: 'Qualifications', items: [
+            "Bachelor's degree in Architecture, Architectural Technology, or Engineering",
+            'Minimum 3–5 years of BIM coordination experience in a design or construction practice',
+            'Expert-level proficiency in Revit; Navisworks and BIM 360/ACC experience required',
+            'Knowledge of Dynamo or Grasshopper for parametric BIM workflows',
+            'Familiarity with IFC standards and open BIM workflows'
+          ]},
+          { title: 'Competencies', items: [
+            'Systematic, detail-oriented approach to data management and model quality control',
+            'Ability to explain technical BIM processes clearly to non-specialist team members',
+            'Proactive in identifying workflow inefficiencies and proposing practical solutions',
+            'Strong interpersonal skills for coordinating across multiple disciplines',
+            'Good English for international software documentation and vendor communication'
+          ]}
+        ],
+        benefits: ['Competitive salary reflecting specialist BIM expertise', 'Full social and health insurance', '13th month salary and annual performance bonus', 'Annual health check-up', 'Software and hardware support for BIM workstation requirements', 'Funding for BIM certification and professional development courses', 'Central role in shaping SUNJIN\'s digital design capability and culture']
+      },
+
+      'project-manager': {
+        title: 'Project Manager',
+        titleBreaks: 'Project<br>Manager',
+        level: 'Expert',
+        deadline: '15 Days',
+        division: 'General Affairs',
+        location: 'Ho Chi Minh City, Vietnam',
+        image: 'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=1400&q=80',
+        description: [
+          { title: 'Project Leadership', items: [
+            'Own the full project lifecycle from contract award through to handover for assigned commissions',
+            'Define project scope, programme, resource allocation, and budget at project initiation',
+            'Chair design team meetings and client reviews; produce and distribute minutes and action registers',
+            'Monitor and manage project programme, proactively resolving schedule risks',
+            'Prepare and submit fee claims, variations, and project financial reports'
+          ]},
+          { title: 'Client & Stakeholder Management', items: [
+            'Serve as primary point of contact for clients throughout the project lifecycle',
+            'Manage stakeholder expectations and communicate design decisions with clarity',
+            'Coordinate with government authorities on approvals, permitting, and regulatory compliance',
+            'Support business development by contributing to proposals, interviews, and client presentations',
+            'Identify opportunities for additional scope and brief extensions on existing projects'
+          ]}
+        ],
+        requirements: [
+          { title: 'Qualifications', items: [
+            "Bachelor's degree in Architecture, Civil Engineering, Construction Management, or equivalent",
+            'PMP certification or equivalent project management qualification preferred',
+            'Minimum 8–10 years of relevant experience, with at least 3 years in a PM leadership role',
+            'Demonstrated experience managing projects of VND 50 billion+ in construction value',
+            'Proficiency in project scheduling software (MS Project, Primavera, or equivalent)'
+          ]},
+          { title: 'Competencies', items: [
+            'Exceptional organisational and time management skills across concurrent projects',
+            'Confident, articulate communicator with strong client relationship capability',
+            'Thorough understanding of Vietnamese construction contracts and procurement processes',
+            'Ability to make sound decisions under pressure and manage competing priorities',
+            'Strong English for international project communication and reporting'
+          ]}
+        ],
+        benefits: ['Highly competitive senior salary commensurate with experience and leadership scope', 'Full social and health insurance', '13th month salary and project performance bonus tied to outcomes', 'Annual health check-up and executive wellness allowance', 'Business travel and client entertainment budget', 'Direct participation in firm leadership and business development strategy', 'Career path to Director level within 2–3 years for high performers']
+      }
+
+    };
+
+    // ── Helpers ───────────────────────────────────────────────────────
+    function buildSections(sections) {
+        return sections.map(s =>
+            `<p class="content-section-title">${s.title}</p>
+             <ul class="content-list">${s.items.map(i => `<li>${i}</li>`).join('')}</ul>`
+        ).join('');
+    }
+
+    function buildBenefits(items) {
+        return `<ul class="content-list">${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+    }
+
+    // ── Populate ──────────────────────────────────────────────────────
+    function populate(d) {
+        document.title = d.title + ' | Careers | SUNJIN VIETNAM';
+
+        const img = document.getElementById('left-img');
+        img.src = d.image; img.alt = d.title;
+
+        document.getElementById('job-title-h1').innerHTML = d.titleBreaks;
+        document.getElementById('meta-level').textContent = d.level;
+        document.getElementById('meta-deadline').textContent = d.deadline;
+        document.getElementById('meta-division').textContent = d.division;
+        document.getElementById('meta-location').textContent = d.location;
+
+        document.getElementById('desc-content').innerHTML = buildSections(d.description);
+        document.getElementById('req-content').innerHTML = buildSections(d.requirements);
+        document.getElementById('benefits-content').innerHTML = buildBenefits(d.benefits);
+    }
+
+    const id = new URLSearchParams(window.location.search).get('id') || 'finishing-supervision';
+    populate(JOBS[id] || JOBS['finishing-supervision']);
+
+    // ── Custom cursor ─────────────────────────────────────────────────
+    const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
+    window.addEventListener('mousemove', e => { dot.style.left=`${e.clientX}px`; dot.style.top=`${e.clientY}px`; outline.animate({left:`${e.clientX}px`,top:`${e.clientY}px`},{duration:500,fill:'forwards'}); });
+    document.querySelectorAll('a,button,label,input,textarea').forEach(el => { el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover')); el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover')); });
+
+    // ── Accordion ─────────────────────────────────────────────────────
+    function toggleAccordion(btn) {
+        const content = btn.nextElementSibling;
+        const chevron = btn.querySelector('.accordion-chevron');
+        const isOpen = content.classList.contains('open');
+        document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
+        document.querySelectorAll('.accordion-chevron').forEach(ch => ch.style.transform = 'rotate(0deg)');
+        if (!isOpen) {
+            content.classList.add('open');
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const firstChevron = document.querySelector('.accordion-header .accordion-chevron');
+        if (firstChevron) firstChevron.style.transform = 'rotate(180deg)';
+    });
+
+    // ── File upload label ─────────────────────────────────────────────
+    function updateUploadLabel(input) {
+        document.getElementById('upload-label').textContent = input.files[0]
+            ? input.files[0].name
+            : 'Upload CV / Portfolio (PDF, max 15MB)';
+    }
+
+    // ── Form submit ───────────────────────────────────────────────────
+    function handleSubmit(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('.submit-btn');
+        btn.textContent = 'Application Sent ✓';
+        btn.style.background = 'rgba(255,255,255,0.15)';
+        btn.style.color = 'white';
+        btn.style.border = '1px solid rgba(255,255,255,0.3)';
+        btn.disabled = true;
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Blog | SUNJIN VIETNAM</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit','sans-serif'], display: ['Jost','sans-serif'] },
+                    colors: { dark: '#0a0a0a', light: '#f5f5f5', accent: '#888888' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0a; color: #f5f5f5; cursor: none; overflow-x: hidden; }
+
+        @media (hover: none), (pointer: coarse) { .cursor-dot, .cursor-outline { display: none !important; } }
+        .cursor-dot, .cursor-outline { position: fixed; top: 0; left: 0; transform: translate(-50%,-50%); border-radius: 50%; z-index: 9999; pointer-events: none; }
+        .cursor-dot { width: 8px; height: 8px; background-color: white; mix-blend-mode: difference; transition: width 0.2s, height 0.2s; }
+        .cursor-outline { width: 40px; height: 40px; border: 1px solid white; mix-blend-mode: difference; transition: width 0.2s, height 0.2s; }
+        .cursor-hover .cursor-dot { width: 0; height: 0; }
+        .cursor-hover .cursor-outline { width: 60px; height: 60px; background-color: rgba(255,255,255,0.1); backdrop-filter: blur(2px); }
+
+        .reveal-up { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.5,0,0,1); }
+        .reveal-up.active { opacity: 1; transform: translateY(0); }
+        .reveal-fade { opacity: 0; transition: opacity 1s ease; }
+        .reveal-fade.active { opacity: 1; }
+
+        #menu-overlay { clip-path: circle(0% at 100% 0); transition: clip-path 0.8s cubic-bezier(0.76,0,0.24,1); }
+        #menu-overlay.open { clip-path: circle(150% at 100% 0); }
+
+        .hover-underline { position: relative; }
+        .hover-underline::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -2px; left: 0; background-color: currentColor; transition: width 0.3s ease; }
+        .hover-underline:hover::after { width: 100%; }
+
+        nav { transition: transform 0.4s cubic-bezier(0.76,0,0.24,1), opacity 0.4s ease; }
+        nav.nav-hidden { transform: translateY(-100%); opacity: 0; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        .article-lead { font-family: 'Outfit', sans-serif; font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.9; color: rgba(245,245,245,0.88); margin-bottom: 2.2rem; }
+        .article-body p { font-family: 'Outfit', sans-serif; font-size: clamp(0.9rem, 1.4vw, 1.02rem); line-height: 1.95; color: rgba(245,245,245,0.65); margin-bottom: 1.8rem; }
+        .article-body h3 { font-family: 'Jost', sans-serif; font-size: clamp(1.4rem, 2.5vw, 1.95rem); font-weight: 300; color: white; margin: 4rem 0 1.4rem; letter-spacing: -0.01em; }
+        .pull-quote { border-left: 1px solid rgba(255,255,255,0.2); padding: 0.5rem 2.2rem 0.5rem 2rem; margin: 4rem 0; }
+        .pull-quote p { font-family: 'Jost', sans-serif; font-size: clamp(1.15rem, 2.2vw, 1.6rem); font-weight: 300; font-style: italic; color: rgba(245,245,245,0.9); line-height: 1.55; margin-bottom: 1.2rem; }
+        .pull-quote cite { font-family: 'Outfit', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.25em; color: rgba(255,255,255,0.28); font-style: normal; }
+
+        .blog-card { display: block; overflow: hidden; position: relative; background: #0d0d0d; cursor: pointer; text-decoration: none; color: white; }
+        .blog-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.85s cubic-bezier(0.25,0.46,0.45,0.94); }
+        .blog-card:hover img { transform: scale(1.05); }
+        .blog-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.28) 55%, transparent 100%); transition: background 0.55s ease; }
+        .blog-card:hover .blog-overlay { background: linear-gradient(to top, rgba(10,10,10,0.97) 0%, rgba(10,10,10,0.58) 60%, rgba(10,10,10,0.18) 100%); }
+        .blog-cat-tag { position: absolute; top: 1.4rem; left: 1.5rem; font-family: 'Outfit', sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.3em; color: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.22); padding: 3px 10px; border-radius: 20px; background: rgba(10,10,10,0.5); backdrop-filter: blur(8px); z-index: 2; }
+        .blog-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem 1.7rem 1.8rem; z-index: 2; }
+        .blog-date { font-family: 'Outfit', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: rgba(255,255,255,0.32); margin-bottom: 8px; display: block; }
+        .blog-title { font-family: 'Jost', sans-serif; font-weight: 300; color: white; line-height: 1.2; }
+
+        #read-progress { position: fixed; top: 0; left: 0; height: 2px; background: rgba(255,255,255,0.6); z-index: 100; width: 0%; transition: width 0.1s linear; }
+    </style>
+</head>
+<body class="antialiased selection:bg-white selection:text-dark">
+
+    <div id="read-progress"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-50 mix-blend-difference text-white">
+        <a href="index.html"><img src="https://sunjin-vietnam.vercel.app/images/slogo2.png" alt="Sunjin Vietnam" class="h-20 md:h-28 w-auto object-contain" /></a>
+
+        <div class="flex items-center gap-6">
+            <button class="hidden md:block bg-transparent border border-white text-white px-6 py-2.5 text-sm uppercase tracking-wide rounded-md font-medium hover:bg-white hover:text-black transition-colors duration-300 interactive" onclick="openContact()">
+                Let's Discuss
+            </button>
+            <button id="menu-btn" class="font-display uppercase tracking-widest text-sm interactive hover-underline">Menu</button>
+        </div>
+    </nav>
+
+    <!-- Fullscreen Menu -->
+    <div id="menu-overlay" class="fixed inset-0 bg-black z-40 text-white flex flex-col justify-between p-6 md:p-10">
+        <div class="flex justify-between items-center mix-blend-normal">
+            <img src="https://sunjin-vietnam.vercel.app/images/slogo2.png" alt="Sunjin Vietnam" class="h-20 md:h-28 w-auto object-contain" />
+            <button id="close-menu-btn" class="font-display uppercase tracking-widest text-sm interactive hover-underline">Close</button>
+        </div>
+        <div class="flex-1 flex items-center justify-center">
+            <ul class="text-center space-y-2 md:space-y-6">
+                <li><a href="index.html" class="font-display text-xl md:text-4xl font-light hover:italic transition-all duration-300 interactive">Home</a></li>
+                <li><a href="about.html" class="font-display text-xl md:text-4xl font-light hover:italic transition-all duration-300 interactive">About</a></li>
+                <li><a href="project.html" class="font-display text-xl md:text-4xl font-light hover:italic transition-all duration-300 interactive">Projects</a></li>
+                <li><a href="blog.html" class="font-display text-xl md:text-4xl font-light hover:italic transition-all duration-300 interactive">Blogs</a></li>
+                <li><a href="careers.html" class="font-display text-xl md:text-4xl font-light hover:italic transition-all duration-300 interactive">Careers</a></li>
+            </ul>
+        </div>
+        <div class="flex justify-between items-end text-xs md:text-sm text-white/50">
+            <div><a href="#" class="hover:text-white interactive">LinkedIn</a></div>
+            <div class="text-right">
+                <p>TRUYENTHONG@SUNJINVIETNAM.VN</p>
+                <p>2ND FLOOR-3A, N07-B2, CAU GIAY</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 p-4">
+        <div class="bg-[#111] border border-white/10 w-full max-w-2xl p-8 md:p-12 relative rounded-xl transform translate-y-10 transition-transform duration-500" id="contact-content">
+            <button onclick="closeContact()" class="absolute top-6 right-6 text-white/50 hover:text-white interactive">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <h2 class="font-display text-3xl md:text-5xl mb-8">Message us.</h2>
+            <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="text" placeholder="Name (Required)" class="bg-transparent border-b border-white/20 py-3 w-full focus:outline-none focus:border-white transition-colors text-sm" required>
+                    <input type="email" placeholder="Email (Required)" class="bg-transparent border-b border-white/20 py-3 w-full focus:outline-none focus:border-white transition-colors text-sm" required>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="tel" placeholder="Phone number (Required)" class="bg-transparent border-b border-white/20 py-3 w-full focus:outline-none focus:border-white transition-colors text-sm" required>
+                    <div class="relative w-full" id="custom-select-wrapper">
+                        <input type="hidden" name="interest" id="interest-value" required>
+                        <button type="button" id="interest-btn" class="w-full border-b border-white/20 py-3 text-left text-sm text-white/50 flex justify-between items-center focus:outline-none bg-transparent" onclick="toggleInterestDropdown()">
+                            <span id="interest-label">Your Interest</span>
+                            <svg class="w-4 h-4 text-white/40 transition-transform duration-200" id="interest-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <ul id="interest-dropdown" class="absolute left-0 right-0 top-full z-50 bg-[#1a1a1a] border border-white/10 rounded-lg overflow-hidden shadow-2xl hidden mt-1">
+                            <li><button type="button" class="w-full text-left px-4 py-3 text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors" onclick="selectInterest('Partnership')">Partnership</button></li>
+                            <li><button type="button" class="w-full text-left px-4 py-3 text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors" onclick="selectInterest('Media')">Media</button></li>
+                            <li><button type="button" class="w-full text-left px-4 py-3 text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors" onclick="selectInterest('General')">General</button></li>
+                        </ul>
+                    </div>
+                </div>
+                <textarea placeholder="Tell us about what you need" rows="4" class="bg-transparent border-b border-white/20 py-3 w-full focus:outline-none focus:border-white transition-colors text-sm resize-none"></textarea>
+                <button type="submit" class="border border-white/30 rounded-full px-8 py-3 text-sm uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-300 interactive w-full md:w-auto">Submit now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ARTICLE HERO -->
+    <section class="relative min-h-screen flex flex-col justify-end overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img id="hero-img" src="" alt="" class="w-full h-full object-cover opacity-45">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/65 to-dark/15"></div>
+        </div>
+        <div class="absolute top-36 left-6 md:left-12 z-10 reveal-fade">
+            <a href="blog.html" class="inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.25em] text-white/40 hover:text-white transition-colors interactive">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Blog
+            </a>
+        </div>
+        <div class="relative z-10 px-6 md:px-12 lg:px-16 pb-16 md:pb-24">
+            <div class="reveal-fade mb-5">
+                <span id="article-cat" class="inline-block font-sans text-[9px] uppercase tracking-[0.35em] text-white/70 border border-white/22 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm"></span>
+            </div>
+            <h1 id="article-title" class="font-display font-light leading-[1.08] tracking-tight text-white reveal-up" style="font-size:clamp(2.2rem,6vw,5.5rem); max-width:900px;"></h1>
+            <div class="mt-8 md:mt-12 flex flex-wrap items-center gap-6 md:gap-10 reveal-up" style="transition-delay:0.2s">
+                <div class="h-px flex-1 max-w-[120px] bg-white/20"></div>
+                <span id="article-date" class="font-sans text-[11px] uppercase tracking-[0.2em] text-white/40"></span>
+                <span class="font-sans text-[11px] uppercase tracking-[0.2em] text-white/25">·</span>
+                <span id="article-readtime" class="font-sans text-[11px] uppercase tracking-[0.2em] text-white/40"></span>
+                <span class="font-sans text-[11px] uppercase tracking-[0.2em] text-white/25">·</span>
+                <span id="article-author" class="font-sans text-[11px] uppercase tracking-[0.2em] text-white/40"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ARTICLE BANNER IMAGE -->
+    <div class="w-full overflow-hidden" style="height: 65vh;">
+        <img id="banner-img" src="" alt="" class="w-full h-full object-cover">
+    </div>
+
+    <!-- ARTICLE BODY -->
+    <article id="article-content" class="py-20 md:py-28 px-6 md:px-16 lg:px-28 xl:px-40">
+        <div id="article-body"></div>
+
+        <!-- Tags -->
+        <div id="article-tags" class="mt-16 pt-10 border-t border-white/8 flex flex-wrap gap-3 reveal-fade"></div>
+
+        <!-- Share -->
+        <div class="mt-10 flex items-center gap-6 reveal-fade">
+            <span class="font-sans text-[10px] uppercase tracking-[0.25em] text-white/25">Share</span>
+            <a href="#" class="font-sans text-[11px] uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors interactive hover-underline">LinkedIn</a>
+            <a href="#" class="font-sans text-[11px] uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors interactive hover-underline">Copy Link</a>
+        </div>
+    </article>
+
+    <!-- RELATED ARTICLES -->
+    <section class="border-t border-white/8 pt-20 pb-0">
+        <div class="px-6 md:px-12 lg:px-16 mb-10 reveal-up">
+            <span class="font-sans text-xs uppercase tracking-[0.3em] text-white/30 block mb-3">Continue Reading</span>
+            <h2 class="font-display font-light text-white" style="font-size: clamp(1.8rem, 4vw, 3rem);">Related Articles</h2>
+        </div>
+        <div class="grid grid-cols-12 gap-px bg-white/[0.12]" id="related-grid"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark pt-24 pb-12 px-6 md:px-16 lg:px-24 text-white">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-24 md:mb-32 reveal-up">
+            <div class="flex flex-col gap-10 md:gap-12 font-sans text-[13px] md:text-sm tracking-[0.1em] uppercase text-white/90 leading-relaxed">
+                <div><p>E: TRUYENTHONG@SUNJINVIETNAM.VN</p><p>P: 097 7279 066</p></div>
+                <div><p>A: 2ND FLOOR - 3A, N07-B2 BUILDING</p><p>CAU GIAY WARD, HA NOI,</p><p>VIETNAM</p></div>
+            </div>
+            <div class="hidden md:flex flex-col items-start md:items-center gap-2">
+                <a href="index.html" class="font-display text-4xl lg:text-[44px] font-light hover:italic transition-all interactive w-fit">Home</a>
+                <a href="about.html" class="font-display text-4xl lg:text-[44px] font-light hover:italic transition-all interactive w-fit">About</a>
+                <a href="project.html" class="font-display text-4xl lg:text-[44px] font-light hover:italic transition-all interactive w-fit">Projects</a>
+                <a href="blog.html" class="font-display text-4xl lg:text-[44px] font-light hover:italic transition-all interactive w-fit">Blogs</a>
+                <a href="careers.html" class="font-display text-4xl lg:text-[44px] font-light hover:italic transition-all interactive w-fit">Careers</a>
+            </div>
+            <div class="flex justify-start md:justify-end items-start mt-8 md:mt-0">
+                <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="font-sans text-[13px] md:text-sm uppercase tracking-[0.1em] text-white/90 hover:text-white interactive transition-colors flex items-center gap-2 group">
+                    BACK TO TOP <svg class="w-4 h-4 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"></path></svg>
+                </button>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12 items-end reveal-up" style="transition-delay:0.2s">
+            <div class="lg:col-span-4 flex flex-col justify-between h-full gap-8 lg:gap-16">
+                <a href="index.html" class="interactive"><img src="https://sunjin-vietnam.vercel.app/images/slogo2.png" alt="Sunjin Vietnam" class="h-20 md:h-28 w-auto object-contain" /></a>
+                <p class="font-sans text-[11px] md:text-xs uppercase tracking-[0.1em] text-white/90">&copy; 2026 SUNJIN VIETNAM. ALL RIGHTS RESERVED</p>
+            </div>
+            <div class="lg:col-span-6 flex flex-col justify-between h-full gap-10 lg:gap-16">
+                <p class="font-sans text-[13px] md:text-sm uppercase tracking-[0.1em] text-white/90 leading-[1.8] max-w-xl">SUNJIN VIETNAM ENSURES EACH PROJECT REFLECTS WORLD-CLASS STANDARDS WHILE SHAPING A LASTING ARCHITECTURAL LEGACY.</p>
+                <div class="flex flex-wrap gap-8 md:gap-12 font-sans text-[11px] md:text-xs uppercase tracking-[0.1em] text-white/90">
+                    <a href="#" class="hover-underline interactive">LINKEDIN</a>
+                    <a href="#" class="hover-underline interactive">PRIVACY POLICY</a>
+                    <a href="#" class="hover-underline interactive">TERMS OF SERVICE</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    const ARTICLES = {
+
+      'national-award': {
+        title: 'SUNJIN VIETNAM Receives National Architecture Silver Award',
+        category: 'News',
+        date: 'January 15, 2025',
+        readTime: '4 min read',
+        author: 'Editorial Team, SUNJIN VIETNAM',
+        image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=2400&q=80',
+        figureImage: 'https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=2400&q=80',
+        figureCaption: 'CT11–12–13 Residential Complex, Dong Da District, Hanoi &nbsp;·&nbsp; Photography: Studio Archive',
+        tags: ['National Award', 'Residential', 'Social Housing', 'Dong Da, Hanoi', '2025'],
+        body: `<p class="article-lead">SUNJIN VIETNAM was awarded the National Architecture Silver Award at Vietnam's 24th National Architecture Awards ceremony, held in Hanoi on 10 January 2025. The honour recognises the CT11–12–13 Residential Complex — a trio of social housing towers completed in 2023 in Hanoi's Dong Da district — for its innovative approach to high-density urban living.</p>
+<div class="article-body">
+<p>The National Architecture Award, administered by the Vietnam Institute of Architecture, is the country's highest annual distinction for completed built works. This year's jury evaluated more than 200 submissions across residential, public, and commercial categories. The Silver Award represents the second-highest distinction in the residential typology, surpassed only by the Gold, which was withheld this cycle.</p>
+<h3>A Housing Project That Refuses the Ordinary</h3>
+<p>The CT11–12–13 brief called for three adjacent residential towers to replace aging social housing stock on a constrained urban site. From the outset, the SUNJIN team sought to move beyond the repetitive slab typology common to Vietnamese social housing, instead proposing a staggered massing that creates semi-private sky gardens on every third floor — outdoor spaces that belong to clusters of apartments rather than to any single household.</p>
+<p>Each tower is clad in a layered façade of perforated aluminium fins that modulate sunlight throughout the day while maintaining natural ventilation to individual apartments. The fins shift orientation depending on each tower's aspect, giving the complex a dynamic quality — one that reads as unified from a distance yet distinctly responsive to its orientation when experienced up close.</p>
+</div>
+<blockquote class="pull-quote reveal-up">
+<p>"Architecture must serve not just the immediate resident, but the neighbourhood and the city beyond. The CT11–12–13 complex was our attempt to demonstrate that public housing can be both rigorously functional and genuinely humane."</p>
+<cite>KTS. Tran Nguyen Quang — Principal Architect, SUNJIN VIETNAM</cite>
+</blockquote>`,
+        bodyAfterFigure: `<div class="article-body">
+<h3>Designed for Community</h3>
+<p>At ground level, the towers open onto a shared podium plaza — a rare amenity in social housing — that houses a covered market, community hall, and children's playground. The architects worked closely with future residents during a participatory design phase, identifying priorities that shaped the spatial programme: shaded outdoor seating, direct sightlines to the playground from kitchen windows, and a clear separation of pedestrian and vehicle routes through the site.</p>
+<h3>What the Jury Said</h3>
+<p>In its commendation, the jury noted the project's <em style="color:rgba(245,245,245,0.88);font-style:italic;">"exceptional commitment to public space as an integral component of residential design,"</em> and praised the SUNJIN team for <em style="color:rgba(245,245,245,0.88);font-style:italic;">"elevating the ambition of social housing without losing sight of the practical and economic constraints that define the typology."</em></p>
+<p>The award arrives at a significant moment for SUNJIN VIETNAM. Over the past three years, the studio has accumulated recognition across multiple international and domestic programmes — from the Architizer A+ People's Choice Award for the Dich Vong Hau Kindergarten to the Green Good Design Award for the University of Commerce. The National Architecture Silver Award consolidates that trajectory and affirms the studio's position as one of Vietnam's leading architectural practices.</p>
+</div>`,
+        related: [
+          { id: 'architizer-awards', image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=900&q=80', cat: 'Press Coverage', date: 'June 10, 2024', title: 'Architizer A+ Awards 2024: Dich Vong Hau Kindergarten Wins Most Voted' },
+          { id: 'public-space', image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=900&q=80', cat: 'Ideas', date: 'December 12, 2024', title: 'The Role of Public Space in Shaping Urban Identity' },
+          { id: 'design-lab', image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80', cat: 'News', date: 'March 18, 2025', title: "New Design Lab Opens in Hanoi's Ba Dinh District" }
+        ]
+      },
+
+      'tropical-climate': {
+        title: 'Designing for Tropical Climate: Principles from Southeast Asia',
+        category: 'Ideas',
+        date: 'April 8, 2025',
+        readTime: '7 min read',
+        author: 'KTS. Nguyen Anh Duong, SUNJIN VIETNAM',
+        image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=2400&q=80',
+        figureImage: 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=2400&q=80',
+        figureCaption: 'Dich Vong Hau Kindergarten, Cầu Giấy, Hanoi &nbsp;·&nbsp; Single-loaded corridor with perforated brick screen — passive solar control without mechanical assistance.',
+        tags: ['Passive Design', 'Tropical Architecture', 'Sustainability', 'Southeast Asia', 'Ideas'],
+        body: `<p class="article-lead">Vietnam sits entirely within the tropical and subtropical zones — a climate reality that every architect practicing here must reckon with honestly. Yet much of the country's rapidly developing built fabric ignores this reality, defaulting instead to sealed glass buildings that demand enormous energy inputs simply to remain habitable. There is a better way, and it has existed in the region for centuries.</p>
+<div class="article-body">
+<p>Passive climate design is not a contemporary invention. The vernacular architecture of Southeast Asia — the stilt houses of the Vietnamese highlands, the deep-verandah colonial shophouses of Hanoi's Old Quarter, the courtyard houses of Hội An — all embody centuries of accumulated knowledge about how to manage heat, humidity, and monsoon rainfall without mechanical assistance. The challenge for contemporary practice is not to copy these forms, but to understand and reapply the principles that made them effective.</p>
+<h3>The Four Fundamentals</h3>
+<p>Across the projects we have completed in Vietnam over the past decade, four principles recur consistently. First: orientation. Every building should be elongated on the east–west axis where possible, minimising the area of facade exposed to the low-angle morning and afternoon sun that drives the greatest heat gain in the tropics. Second: shading before glazing. Deep overhangs, vertical fins, and perforated screens intercept direct solar radiation before it reaches the glass — a far more efficient strategy than low-emissivity glazing applied to an exposed facade.</p>
+<p>Third: cross-ventilation as a design driver, not an afterthought. In a climate where the wet-bulb temperature rarely drops below comfort thresholds even at night, moving air is the primary cooling mechanism available without mechanical assistance. This means planning buildings so that prevailing wind directions drive air through every occupied room — not along corridors, but through spaces. Fourth: thermal mass where it counts. Exposed concrete ceilings and brick walls absorb heat during the day and release it at night, moderating the diurnal temperature swing that makes tropical interiors uncomfortable even in the absence of direct sun.</p>
+</div>
+<blockquote class="pull-quote reveal-up">
+<p>"The most sustainable building in a tropical climate is one that never needed an air conditioner in the first place — not one that uses less energy to run the one it couldn't avoid."</p>
+<cite>KTS. Nguyen Anh Duong — Design Architect, SUNJIN VIETNAM</cite>
+</blockquote>`,
+        bodyAfterFigure: `<div class="article-body">
+<h3>Biophilic Design as Climate Strategy</h3>
+<p>There is a productive overlap between biophilic design — the integration of living systems into the built environment — and passive climate performance. Planted terraces reduce surface temperatures through evapotranspiration. Interior courtyards create stack-effect ventilation as warm air rises and draws cooler air in at ground level. Trees planted on the western boundary of a site are more effective at reducing cooling loads than any curtain wall specification.</p>
+<p>At the Dich Vong Hau Kindergarten in Cầu Giấy, the courtyard-first planning strategy was both a spatial decision and a climate decision: the central outdoor space acts as a thermal buffer between the classroom wings, and the planting within it moderates the microclimate experienced by children moving between inside and outside throughout the school day. The outcome is a building that performs well in Hanoi's climate without air conditioning in the classrooms — a result that surprised even the client, who had budgeted for a full mechanical cooling system.</p>
+<p>The principles are not complex. Their consistent application across projects of different typologies and budgets is the challenge — and the opportunity — for architects practicing in Vietnam today.</p>
+</div>`,
+        related: [
+          { id: 'public-space', image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=900&q=80', cat: 'Ideas', date: 'December 12, 2024', title: 'The Role of Public Space in Shaping Urban Identity' },
+          { id: 'green-hanoi', image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80', cat: 'Community Responsibility', date: 'November 5, 2024', title: 'Green Hanoi Initiative: 1,000 Trees, One City' },
+          { id: 'national-award', image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=900&q=80', cat: 'News', date: 'January 15, 2025', title: 'SUNJIN VIETNAM Receives National Architecture Silver Award' }
+        ]
+      },
+
+      'dezeen-spotlight': {
+        title: "Dezeen Spotlight: Vietnam's Modernist Architecture Revolution",
+        category: 'Press Coverage',
+        date: 'February 22, 2025',
+        readTime: '3 min read',
+        author: 'Editorial Team, SUNJIN VIETNAM',
+        image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=2400&q=80',
+        figureImage: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=2400&q=80',
+        figureCaption: 'From the Dezeen feature — photography by Hiroyuki Oki, commissioned for the international coverage of Vietnamese contemporary architecture.',
+        tags: ['Press Coverage', 'International Media', 'Dezeen', 'Vietnamese Architecture', '2025'],
+        body: `<p class="article-lead">Dezeen, the world's most-read architecture and design magazine, has published a major feature examining the emergence of a new generation of Vietnamese architecture studios — and SUNJIN VIETNAM is among the practices highlighted as defining the direction of the country's contemporary built culture.</p>
+<div class="article-body">
+<p>The feature, titled <em style="color:rgba(245,245,245,0.88);font-style:italic;">"Vietnam's New Architecture: From Rapid Urbanisation to Design Leadership,"</em> profiles seven Hanoi and Ho Chi Minh City-based studios whose work over the past decade has drawn sustained international attention. Dezeen's editorial team visited Vietnam in late 2024 to document completed projects in person — a level of editorial commitment that reflects the degree to which the country's architecture has moved from regional interest to global relevance.</p>
+<h3>What Dezeen Found in Hanoi</h3>
+<p>The article opens with a question the author poses at the start of a site visit to Cầu Giấy District: why does this part of Hanoi feel different from the rest? The answer, the author argues, is density with intention — buildings designed not just to fill their footprints, but to create conditions that make dense urban living genuinely liveable. The Cau Giay Secondary School is cited as a primary example: a school that manages the compression of 1,200 students onto a 2,400 square metre site without producing the institutional bleakness that such constraints typically impose.</p>
+<p>SUNJIN VIETNAM's principal, KTS. Tran Nguyen Quang, is quoted in the feature on the question of identity: "We are not trying to produce Vietnamese architecture as a style. We are trying to produce architecture that could only exist in Vietnam — shaped by its climate, its materials, its social conditions, and its ambitions." The Dezeen editor describes this as a position that distinguishes the studio from both the nostalgic regionalism that defines some local practice and the uncritical internationalism that defines much more of it.</p>
+</div>
+<blockquote class="pull-quote reveal-up">
+<p>"What makes Vietnamese architecture interesting right now is that the best practitioners are drawing on a deep understanding of place without being trapped by it."</p>
+<cite>Dezeen Feature, February 2025</cite>
+</blockquote>`,
+        bodyAfterFigure: `<div class="article-body">
+<h3>International Recognition, Local Roots</h3>
+<p>The Dezeen piece arrives alongside a broader shift in how international design media covers Southeast Asian architecture. Where coverage once focused on resort design and foreign-designed landmark buildings, it now increasingly documents the work of locally rooted practices whose authority derives from a sustained engagement with local conditions rather than an imported aesthetic.</p>
+<p>For SUNJIN VIETNAM, the feature represents an affirmation of a direction the studio has pursued consistently for over a decade: rigorous, climate-responsive design that takes its material and spatial cues from the specific conditions of each project, rather than from a generalised international vocabulary. The full Dezeen feature is available at dezeen.com.</p>
+</div>`,
+        related: [
+          { id: 'architizer-awards', image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=900&q=80', cat: 'Press Coverage', date: 'June 10, 2024', title: 'Architizer A+ Awards 2024: Dich Vong Hau Kindergarten Wins Most Voted' },
+          { id: 'national-award', image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=900&q=80', cat: 'News', date: 'January 15, 2025', title: 'SUNJIN VIETNAM Receives National Architecture Silver Award' },
+          { id: 'tropical-climate', image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=80', cat: 'Ideas', date: 'April 8, 2025', title: 'Designing for Tropical Climate: Principles from Southeast Asia' }
+        ]
+      },
+
+      'green-hanoi': {
+        title: 'Green Hanoi Initiative: 1,000 Trees, One City',
+        category: 'Community Responsibility',
+        date: 'November 5, 2024',
+        readTime: '5 min read',
+        author: 'Editorial Team, SUNJIN VIETNAM',
+        image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2400&q=80',
+        figureImage: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=2400&q=80',
+        figureCaption: 'Planting day in Cầu Giấy District — SUNJIN VIETNAM staff and local residents planting native species along the restored green corridor on Xuân Thủy Boulevard.',
+        tags: ['Green Initiative', 'Urban Greening', 'Community', 'Hanoi', 'CSR'],
+        body: `<p class="article-lead">In October 2024, SUNJIN VIETNAM completed the first phase of the Green Hanoi Initiative — a multi-year programme conducted in partnership with the Hanoi Department of Natural Resources and Environment to restore urban tree canopy across five of the capital's most densely developed districts. One thousand trees planted. One city, made fractionally more liveable.</p>
+<div class="article-body">
+<p>The impetus for the initiative came from a specific observation made during site surveys for the Cau Giay Secondary School project in 2020: the street directly outside the school, which would become the primary route for 1,200 students every morning and afternoon, had lost its original tree canopy to road widening works a decade earlier and had never been replanted. Students arriving at a school designed around natural ventilation and outdoor learning would be doing so along a heat-island boulevard with no shade.</p>
+<p>Rather than accepting this as a given condition, the SUNJIN team approached the district authorities with a proposal: if the studio could secure funding from corporate partners and coordinate the planting work, would the district authorities provide the permits, the soil preparation, and the ongoing maintenance? The district agreed. Three corporate sponsors — including a major materials supplier and a property developer with whom the studio has an ongoing relationship — contributed funding. The Green Hanoi Initiative was formalised as a three-year programme covering five districts.</p>
+<h3>Species Selection as Design</h3>
+<p>The tree selection was not incidental. Working with a landscape ecologist from the Vietnam National University of Forestry, the team developed a planting palette of twelve native species suited to the specific microclimate conditions of each boulevard — accounting for soil type, drainage, overhead utility infrastructure, and proximity to buildings. The palette deliberately excludes the ornamental flowering species that Hanoi's parks departments have favoured in recent decades in favour of large-canopy shade trees: cây gội nếp, xà cừ, cây sấu — species with a historical presence in Hanoi's urban forest that were removed during the rapid development of the 1990s and 2000s.</p>
+</div>
+<blockquote class="pull-quote reveal-up">
+<p>"Trees are infrastructure. Planting them is not a gesture — it is an act of long-term investment in the liveability of a city that will outlast any building we design."</p>
+<cite>KTS. Tran Nguyen Quang — Principal Architect, SUNJIN VIETNAM</cite>
+</blockquote>`,
+        bodyAfterFigure: `<div class="article-body">
+<h3>Phase Two: Expanding the Network</h3>
+<p>The second phase of the initiative, beginning in early 2025, will extend the programme to the remaining two districts and introduce a community stewardship element — training local residents in the basic maintenance of the planted trees so that the canopy can be sustained independently of the NGO partners who supervised Phase One.</p>
+<p>SUNJIN VIETNAM's corporate responsibility programmes are funded from a dedicated percentage of the studio's annual revenue, established as a policy at the time the firm was founded. The Green Hanoi Initiative is the largest single programme the studio has undertaken to date. For a firm defined by the conviction that architecture can improve the quality of urban life, a thousand trees planted along a school street feels like an appropriate place to begin.</p>
+</div>`,
+        related: [
+          { id: 'sunjin-academy', image: 'https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?auto=format&fit=crop&w=900&q=80', cat: 'Community Responsibility', date: 'January 30, 2025', title: 'SUNJIN Academy: Training the Next Generation of Architects' },
+          { id: 'tropical-climate', image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=80', cat: 'Ideas', date: 'April 8, 2025', title: 'Designing for Tropical Climate: Principles from Southeast Asia' },
+          { id: 'public-space', image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=900&q=80', cat: 'Ideas', date: 'December 12, 2024', title: 'The Role of Public Space in Shaping Urban Identity' }
+        ]
+      },
+
+      'design-lab': {
+        title: "New Design Lab Opens in Hanoi's Ba Dinh District",
+        category: 'News',
+        date: 'March 18, 2025',
+        readTime: '3 min read',
+        author: 'Editorial Team, SUNJIN VIETNAM',
+        image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=2400&q=80',
+        figureImage: 'https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=2400&q=80',
+        figureCaption: "SUNJIN Design Lab, Ba Dinh District, Hanoi — the open-plan model-making and digital fabrication floor, occupying the full ground level of the studio's new facility.",
+        tags: ['Studio News', 'Design Lab', 'Digital Fabrication', 'Hanoi', '2025'],
+        body: `<p class="article-lead">SUNJIN VIETNAM has opened a new Design Lab in Ba Dinh District — a dedicated research, prototyping, and digital fabrication facility that expands the studio's capacity to test ideas at full scale before committing them to construction documents. The lab is open to the studio's full team and to selected academic and industry collaborators.</p>
+<div class="article-body">
+<p>The decision to establish a dedicated physical lab was driven by a consistent frustration in the design process: the gap between what a model or rendering shows and what a built detail actually does. Digital tools have transformed the speed and precision of architectural representation, but they have not replaced the need to hold a material in your hands, to see how two surfaces meet under real light, or to understand through making why a structural connection that looks elegant in section becomes awkward in three dimensions.</p>
+<h3>What the Lab Contains</h3>
+<p>The ground floor of the 620-square-metre facility houses the fabrication equipment: a large-format CNC router, two FDM 3D printers and one resin printer for detail models, a laser cutter, and a full hand-tool workshop for timber and model-making. The first floor is an open design studio configured for collaborative working — a flexible floor plan that can accommodate pin-up reviews, client presentations, and workshop sessions for up to forty people. A material library occupying one full wall contains samples of every material specified on current and recently completed projects, available for reference at any stage of the design process.</p>
+<p>The lab was designed by the studio itself — a deliberate decision to practice what it preaches about the value of spatial design in enabling the activities it hosts. The interiors use the same exposed concrete, timber, and brick palette that characterises the studio's work on school and cultural projects, with full-height glazing on the north facade maintaining even diffused light across the fabrication floor throughout the working day.</p>
+</div>
+<blockquote class="pull-quote reveal-up">
+<p>"The best design decisions happen in the workshop, not at the screen. The lab gives us a permanent place to make those decisions as part of the daily rhythm of the studio."</p>
+<cite>KTS. Dinh Van Thanh — Project Architect, SUNJIN VIETNAM</cite>
+</blockquote>`,
+        bodyAfterFigure: `<div class="article-body">
+<h3>Academic Collaboration</h3>
+<p>The lab will host a quarterly workshop series open to architecture students from Hanoi Architectural University and the Vietnam National University of Civil Engineering. The first workshop, scheduled for May 2025, focuses on full-scale facade mock-up construction — asking student teams to build a one-metre-square section of a specified facade system using the lab's tools and materials, then present their mock-ups to a panel of practicing architects for technical critique.</p>
+<p>The lab is located at 12B Hoàng Diệu Street, Ba Dinh District, Hanoi, adjacent to the studio's existing offices. Visiting architects and researchers interested in a tour or collaboration are welcome to contact the studio directly.</p>
+</div>`,
+        related: [
+          { id: 'national-award', image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=900&q=80', cat: 'News', date: 'January 15, 2025', title: 'SUNJIN VIETNAM Receives National Architecture Silver Award' },
+          { id: 'sunjin-academy', image: 'https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?auto=format&fit=crop&w=900&q=80', cat: 'Community Responsibility', date: 'January 30, 2025', title: 'SUNJIN Academy: Training the Next Generation of Architects' },
+          { id: 'tropical-climate', image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=80', cat: 'Ideas', date: 'April 8, 2025', title: 'Designing for Tropical Climate: Principles from Southeast Asia' }
+        ]
+      },
+
+      'public-space': {
+        title: 'The Role of Public Space in Shaping Urban Identity',
+        category: 'Ideas',
+        date: 'December 12, 2024',
+        readTime: '6 min read',
+        author: 'KTS. Le Van Hao, SUNJIN VIETNAM',
+        image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2400&q=80',
+        figureImage: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=2400&q=80',
+        figureCaption: 'Hoan Kiem Lake, Hanoi — one of the city\'s most vital public spaces, demonstrating how a single landscape element can anchor the identity of an entire urban area.',
+        tags: ['Public Space', 'Urban Design', 'Civic Architecture', 'Ideas', 'Vietnam'],
+        body: `<p class="article-lead">A city is not its buildings. It is the spaces between them — the streets, squares, parks, and passages where people meet, move, linger, and make sense of where they are. In Vietnam's rapidly urbanising cities, these spaces are under pressure: claimed for parking, narrowed for traffic, privatised into guarded compounds. The cost is not aesthetic. It is civic.</p>
+<div class="article-body">
+<p>Public space has a functional role — it moves people, provides access, accommodates markets and events. But its most important contribution to urban life is something harder to quantify: it creates the conditions for accidental encounter. The chance meeting, the overheard conversation, the shared experience of watching something happen in a public square — these are the materials from which social cohesion is made. When public space disappears, so does the city's capacity to produce the informal bonds that hold a neighbourhood together.</p>
+<h3>Vietnam's Public Space Crisis</h3>
+<p>Hanoi and Ho Chi Minh City are among the most densely settled urban environments in Southeast Asia, yet both cities have consistently underinvested in public open space relative to population. The per-capita provision of parks and public plazas in Hanoi is approximately 0.9 square metres — compared to a World Health Organisation recommendation of 9 square metres. The shortfall is not simply a planning failure; it reflects a hierarchy of values in which productivity, traffic flow, and private development have been consistently prioritised over the slower, less measurable returns of shared urban space.</p>
+<p>The consequences are visible in the way Hanoians use what public space remains. Every morning, Hoan Kiem Lake is packed — people exercising, socialising, sitting in the shade. The lake is not large. But it is genuinely public, accessible at all hours without charge, and surrounded by a pedestrian zone that makes it possible to move through it on foot without competing with traffic. It is, in this sense, a prototype for what Hanoi's streets and squares could become if the same principles were applied more broadly.</p>
+</div>
+<blockquote class="pull-quote reveal-up">
+<p>"The spaces that define a city's identity are almost never the landmark buildings. They are the street corner where the morning market sets up, the shaded pavement outside a school, the narrow alley that connects two neighbourhoods unexpectedly."</p>
+<cite>KTS. Le Van Hao — Architect, SUNJIN VIETNAM</cite>
+</blockquote>`,
+        bodyAfterFigure: `<div class="article-body">
+<h3>Architecture's Responsibility</h3>
+<p>Architects cannot solve a city's public space deficit on their own — that requires sustained policy commitment and public investment. But architecture can refuse to make the problem worse. Every building that turns its back on the street, every development that encloses its ground floor in a guarded lobby, every project that treats the public realm as a residual space between parking and entrance — these choices accumulate into cities that feel hostile to the pedestrian life that animates them.</p>
+<p>At SUNJIN VIETNAM, we apply a consistent test to every project where we have agency over the ground floor condition: would someone who has no reason to enter this building choose to pass through the space it creates at street level? At the University of Commerce, the answer was a covered public arcade running the full length of the north facade. At the Pavilion at Dien Hong Garden, it was a structure with no walls at all — a roof held up by sixteen columns, offering shade to anyone who needed it. These are small interventions relative to the scale of the city's need. But they are the right direction.</p>
+</div>`,
+        related: [
+          { id: 'tropical-climate', image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=80', cat: 'Ideas', date: 'April 8, 2025', title: 'Designing for Tropical Climate: Principles from Southeast Asia' },
+          { id: 'green-hanoi', image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80', cat: 'Community Responsibility', date: 'November 5, 2024', title: 'Green Hanoi Initiative: 1,000 Trees, One City' },
+          { id: 'national-award', image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=900&q=80', cat: 'News', date: 'January 15, 2025', title: 'SUNJIN VIETNAM Receives National Architecture Silver Award' }
+        ]
+      },
+
+      'sunjin-academy': {
+        title: 'SUNJIN Academy: Training the Next Generation of Architects',
+        category: 'Community Responsibility',
+        date: 'January 30, 2025',
+        readTime: '4 min read',
+        author: 'Editorial Team, SUNJIN VIETNAM',
+        image: 'https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?auto=format&fit=crop&w=2400&q=80',
+        figureImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=2400&q=80',
+        figureCaption: 'SUNJIN Academy 2025 cohort — weekly design review session in the studio, led by senior architects across multiple active project phases.',
+        tags: ['Education', 'Internship', 'SUNJIN Academy', 'Community', 'Architecture Training'],
+        body: `<p class="article-lead">Twenty architecture students from six Vietnamese universities began their placements at SUNJIN VIETNAM in January 2025, under the expanded SUNJIN Academy programme — the studio's structured internship initiative that places students on live projects from day one, under the direct mentorship of senior architects.</p>
+<div class="article-body">
+<p>The programme was founded on a straightforward conviction: the gap between architectural education and professional practice in Vietnam is wider than it needs to be, and studios have a responsibility to help close it. University training in architecture is strong in theory and history but often limited in practical exposure to the full lifecycle of a building project — from initial brief to construction supervision. SUNJIN Academy addresses this by embedding students in active project teams at specific phases, so that the skills they practise are not simulated but real.</p>
+<h3>How the Programme Works</h3>
+<p>Each intern is assigned to a primary project team for the duration of their placement, typically three to six months, based on alignment between the project's phase and the student's expressed areas of interest. A student with strong computational design skills might join the BIM coordination team on a complex facade project; one interested in site supervision might be placed with the construction management team on a project entering its finishing phase. The assignment is not random — it is a deliberate matching of student capability to project need.</p>
+<p>Every intern participates in weekly pin-up reviews at which their work — whether drawings, models, or site reports — is presented to a panel of senior architects for feedback. The culture of these reviews is critical but constructive: the aim is not to evaluate the intern but to teach them how to receive and apply design criticism, which is among the most important professional skills an architect can possess and among the hardest to teach outside of a live project environment.</p>
+</div>
+<blockquote class="pull-quote reveal-up">
+<p>"The best thing a studio can give a student is real responsibility. Not a simulation of work, but actual work — with actual consequences for the project and actual support from the team around them."</p>
+<cite>KTS. Pham Thanh Hung — Senior Architect, SUNJIN VIETNAM</cite>
+</blockquote>`,
+        bodyAfterFigure: `<div class="article-body">
+<h3>2025 Cohort and Beyond</h3>
+<p>The 2025 intake is the largest in the programme's history, reflecting both the growth of the studio's project portfolio and a deliberate decision to expand the community responsibility commitment that underpins the Academy. Of the twenty students in the current cohort, four are recipients of the SUNJIN Foundation Scholarship — a financial support programme for students from regional universities outside Hanoi who would otherwise be unable to afford accommodation in the capital during the placement period.</p>
+<p>Applications for the 2026 SUNJIN Academy cohort will open in September 2025. Students in their third year or above from any accredited architecture programme in Vietnam are eligible to apply. Full details will be published on the studio's website and circulated to architecture school coordinators directly.</p>
+</div>`,
+        related: [
+          { id: 'green-hanoi', image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80', cat: 'Community Responsibility', date: 'November 5, 2024', title: 'Green Hanoi Initiative: 1,000 Trees, One City' },
+          { id: 'design-lab', image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80', cat: 'News', date: 'March 18, 2025', title: "New Design Lab Opens in Hanoi's Ba Dinh District" },
+          { id: 'national-award', image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=900&q=80', cat: 'News', date: 'January 15, 2025', title: 'SUNJIN VIETNAM Receives National Architecture Silver Award' }
+        ]
+      },
+
+      'architizer-awards': {
+        title: 'Architizer A+ Awards 2024: Dich Vong Hau Kindergarten Wins Most Voted',
+        category: 'Press Coverage',
+        date: 'June 10, 2024',
+        readTime: '3 min read',
+        author: 'Editorial Team, SUNJIN VIETNAM',
+        image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=2400&q=80',
+        figureImage: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=2400&q=80',
+        figureCaption: "Dich Vong Hau Kindergarten, Cầu Giấy, Hanoi — the central courtyard that earned the project international recognition for its child-centred spatial design.",
+        tags: ['Architizer', 'International Award', 'Kindergarten', 'Press Coverage', '2024'],
+        body: `<p class="article-lead">The Dich Vong Hau Kindergarten has been awarded the Architizer A+ Most Voted prize in the Kindergarten category — selected by a public vote of more than 400,000 architecture professionals and enthusiasts worldwide, making it the highest-voted educational project in the 2024 cycle of one of architecture's most widely followed annual award programmes.</p>
+<div class="article-body">
+<p>The Architizer A+ Awards, established in 2013, recognise the best architecture and products of the past year across more than 100 categories. The programme combines a jury evaluation with a public voting component — the Most Voted prize — that is determined entirely by the architecture community's response to the submitted projects. The 2024 cycle attracted submissions from more than 6,500 firms across 100 countries.</p>
+<h3>Why the Kindergarten Resonated</h3>
+<p>The international response to the Dich Vong Hau Kindergarten reflects something that the SUNJIN team observed from the earliest design stages: there is a near-universal recognition among architects and educators of what is wrong with the standard institutional kindergarten, and an equally universal hunger for a convincing alternative. The project was designed on the principle that the courtyard — a shared outdoor space that belongs to the whole school rather than to any single class — should be established first, before the building was placed around it. This inversion of the standard planning process produced a spatial quality that the jury and the public responded to: a school that feels generous and open rather than compressed and institutional.</p>
+<p>The project page on Architizer received over 28,000 individual votes during the public voting period — more than any other entry in the Civic and Educational categories. Comments from voters cited the courtyard organisation, the perforated brick facade system, and the rooftop play terraces as the elements that distinguished the project from its peers.</p>
+</div>
+<blockquote class="pull-quote reveal-up">
+<p>"We wanted to design a school that children would choose to go to, rather than one they are sent to. The courtyard is the heart of that intention — a space that belongs to the children, not to the institution."</p>
+<cite>KTS. Tran Nguyen Quang — Principal Architect, SUNJIN VIETNAM</cite>
+</blockquote>`,
+        bodyAfterFigure: `<div class="article-body">
+<h3>A Year of International Recognition</h3>
+<p>The Architizer A+ Most Voted prize follows the Green Good Design Award received by the University of Commerce in the same year and precedes the National Architecture Silver Award presented to the CT11–12–13 Residential Complex in January 2025. Taken together, these recognitions span three typologies — educational, campus, and residential — and reflect the breadth of the studio's work rather than a single project's exceptionality.</p>
+<p>For the kindergarten specifically, the award has generated a significant volume of international enquiry. The studio has since been in dialogue with education ministries in three Southeast Asian countries, and with an international NGO that specialises in school infrastructure in low-income urban contexts, about the applicability of the courtyard-first planning approach to projects with more constrained budgets and in more challenging site conditions. This is precisely the kind of dialogue that good architecture should provoke.</p>
+</div>`,
+        related: [
+          { id: 'dezeen-spotlight', image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=900&q=80', cat: 'Press Coverage', date: 'February 22, 2025', title: "Dezeen Spotlight: Vietnam's Modernist Architecture Revolution" },
+          { id: 'national-award', image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=900&q=80', cat: 'News', date: 'January 15, 2025', title: 'SUNJIN VIETNAM Receives National Architecture Silver Award' },
+          { id: 'tropical-climate', image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=80', cat: 'Ideas', date: 'April 8, 2025', title: 'Designing for Tropical Climate: Principles from Southeast Asia' }
+        ]
+      }
+
+    };
+
+    // ── Populate ──────────────────────────────────────────────────────
+    function populate(d) {
+        document.title = d.title + ' | Blog | SUNJIN VIETNAM';
+
+        document.getElementById('hero-img').src = d.image;
+        document.getElementById('hero-img').alt = d.title;
+        document.getElementById('banner-img').src = d.image;
+        document.getElementById('banner-img').alt = d.title;
+        document.getElementById('article-cat').textContent = d.category;
+        document.getElementById('article-title').textContent = d.title;
+        document.getElementById('article-date').textContent = d.date;
+        document.getElementById('article-readtime').textContent = d.readTime;
+        document.getElementById('article-author').textContent = d.author;
+
+        // Article body + full-bleed figure
+        const figureHTML = `<figure class="my-20 md:my-28 -mx-6 md:-mx-16 lg:-mx-28 xl:-mx-40 reveal-fade">
+            <div class="w-full overflow-hidden" style="height:60vh;">
+                <img src="${d.figureImage}" alt="${d.title}" class="w-full h-full object-cover">
+            </div>
+            <figcaption class="mt-5 px-6 md:px-16 font-sans text-[10px] uppercase tracking-[0.25em] text-white/28 text-center">${d.figureCaption}</figcaption>
+        </figure>`;
+        document.getElementById('article-body').innerHTML = d.body + figureHTML + d.bodyAfterFigure;
+
+        // Tags
+        document.getElementById('article-tags').innerHTML = d.tags.map(t =>
+            `<span class="font-sans text-[10px] uppercase tracking-[0.25em] text-white/40 border border-white/12 px-4 py-2 rounded-full">${t}</span>`
+        ).join('');
+
+        // Related articles
+        document.getElementById('related-grid').innerHTML = d.related.map(r =>
+            `<a href="blog-detail.html?id=${r.id}" class="blog-card col-span-12 md:col-span-4" style="height:48vh;">
+                <img src="${r.image}" alt="${r.title}">
+                <div class="blog-overlay"></div>
+                <span class="blog-cat-tag">${r.cat}</span>
+                <div class="blog-info">
+                    <span class="blog-date">${r.date}</span>
+                    <h3 class="blog-title" style="font-size:clamp(1rem,2vw,1.5rem);">${r.title}</h3>
+                </div>
+            </a>`
+        ).join('');
+
+        // Re-observe new reveal elements
+        document.querySelectorAll('.reveal-up:not(.active), .reveal-fade:not(.active)').forEach(el => observer.observe(el));
+    }
+
+    // ── Cursor ────────────────────────────────────────────────────────
+    const dot = document.getElementById('cursor-dot');
+    const outline = document.getElementById('cursor-outline');
+    window.addEventListener('mousemove', (e) => {
+        dot.style.left = `${e.clientX}px`; dot.style.top = `${e.clientY}px`;
+        outline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: 'forwards' });
+    });
+    document.querySelectorAll('a, button, .interactive').forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    // ── Scroll reveal ─────────────────────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('active'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal-up, .reveal-fade').forEach(el => observer.observe(el));
+
+    const id = new URLSearchParams(window.location.search).get('id') || 'national-award';
+    populate(ARTICLES[id] || ARTICLES['national-award']);
+
+    // ── Reading progress bar ──────────────────────────────────────────
+    const progressBar = document.getElementById('read-progress');
+    const articleEl = document.getElementById('article-content');
+    window.addEventListener('scroll', () => {
+        const rect = articleEl.getBoundingClientRect();
+        const scrolled = Math.max(0, -rect.top);
+        const pct = Math.min(100, (scrolled / (articleEl.offsetHeight - window.innerHeight)) * 100);
+        progressBar.style.width = pct + '%';
+    }, { passive: true });
+
+    // ── Menu ──────────────────────────────────────────────────────────
+    const menuBtn = document.getElementById('menu-btn');
+    const closeMenuBtn = document.getElementById('close-menu-btn');
+    const menuOverlay = document.getElementById('menu-overlay');
+    const mainNav = document.querySelector('nav');
+    menuBtn.addEventListener('click', () => { menuOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; mainNav.classList.add('nav-hidden'); });
+    closeMenuBtn.addEventListener('click', () => { menuOverlay.classList.remove('open'); document.body.style.overflow = ''; mainNav.classList.remove('nav-hidden'); });
+
+    let lastScrollY = 0;
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        if (currentScrollY > lastScrollY && currentScrollY > 80) {
+            mainNav.classList.add('nav-hidden');
+        } else {
+            mainNav.classList.remove('nav-hidden');
+        }
+        lastScrollY = currentScrollY;
+    }, { passive: true });
+
+    // ── Contact ───────────────────────────────────────────────────────
+    const contactModal = document.getElementById('contact-modal');
+    const contactContent = document.getElementById('contact-content');
+    function openContact() { contactModal.classList.remove('opacity-0','pointer-events-none'); contactContent.classList.remove('translate-y-10'); document.body.style.overflow = 'hidden'; }
+    function closeContact() { contactModal.classList.add('opacity-0','pointer-events-none'); contactContent.classList.add('translate-y-10'); document.body.style.overflow = ''; }
+    function toggleInterestDropdown() { const dd = document.getElementById('interest-dropdown'); const ch = document.getElementById('interest-chevron'); const h = dd.classList.contains('hidden'); dd.classList.toggle('hidden', !h); ch.style.transform = h ? 'rotate(180deg)' : ''; }
+    function selectInterest(v) { document.getElementById('interest-value').value = v; document.getElementById('interest-label').textContent = v; toggleInterestDropdown(); }
+    document.addEventListener('click', (e) => { const w = document.getElementById('custom-select-wrapper'); if (w && !w.contains(e.target)) { document.getElementById('interest-dropdown').classList.add('hidden'); document.getElementById('interest-chevron').style.transform = ''; } });
+    contactModal.addEventListener('click', (e) => { if (e.target === contactModal) closeContact(); });
+    </script>
+</body>
+</html>
